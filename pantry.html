@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pantry — Kitchen</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .page-layout {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: start;
+    }
+    .page-content { min-width: 0; }
+
+    .pantry-widget {
+      position: sticky;
+      top: 84px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .pantry-widget-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .pantry-svg-wrap {
+      position: relative;
+      transition: transform 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+    .pantry-svg-wrap:hover { transform: scale(1.05); }
+    .pantry-svg-wrap:active { transform: scale(0.97); }
+
+    .pantry-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 26px;
+      height: 26px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: white;
+      box-shadow: 0 2px 8px rgba(249,115,22,0.45);
+      font-family: 'DM Mono', monospace;
+      border: 2px solid white;
+      transition: transform 0.2s ease;
+    }
+    .pantry-badge.bump { animation: badgeBump 0.3s ease; }
+    @keyframes badgeBump {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+
+    .pantry-drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(26,10,0,0.35);
+      backdrop-filter: blur(4px);
+      z-index: 150;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .pantry-drawer-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .pantry-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(420px, 100vw);
+      background: rgba(255,247,237,0.97);
+      backdrop-filter: blur(20px);
+      border-left: 1px solid var(--glass-border);
+      box-shadow: -12px 0 48px rgba(194,65,12,0.15);
+      z-index: 151;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .pantry-drawer.open { transform: translateX(0); }
+    .pantry-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.4);
+      flex-shrink: 0;
+    }
+    .pantry-drawer-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--orange-800);
+    }
+    .pantry-drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .drawer-item {
+      background: var(--surface);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 0.9rem 1rem;
+      animation: fadeUp 0.3s ease both;
+    }
+    .drawer-item .item-name { font-size: 0.85rem; font-weight: 500; margin-bottom: 0.4rem; }
+    .drawer-item .item-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .drawer-empty {
+      text-align: center; padding: 3rem 1rem;
+      color: var(--text-muted); font-size: 0.78rem; letter-spacing: 0.04em;
+    }
+    .drawer-empty .empty-icon { font-size: 2.5rem; opacity: 0.4; margin-bottom: 0.75rem; }
+
+    @media (max-width: 700px) {
+      .page-layout { grid-template-columns: 1fr; }
+      .pantry-widget {
+        position: fixed; bottom: 1.5rem; right: 1.5rem; top: auto; z-index: 90;
+        background: rgba(255,247,237,0.9); padding: 0.6rem; border-radius: 50%;
+        box-shadow: 0 4px 20px rgba(194,65,12,0.2); border: 1px solid var(--glass-border);
+      }
+      .pantry-widget-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">
+    <span class="brand-icon">🍊</span> Kitchen
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">🏠 Home</a></li>
+    <li><a href="fridge.html">🧊 Fridge</a></li>
+    <li><a href="pantry.html">🫙 Pantry</a></li>
+    <li><a href="grocery.html">🛒 Grocery</a></li>
+    <li><a href="bucket.html">✨ Bucket</a></li>
+  </ul>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<main>
+  <div class="page-layout">
+    <div class="page-content">
+      <div class="page-header">
+        <h1>🫙 <span>Pantry</span></h1>
+        <p>Dry goods, canned items, spices and shelf-stable staples</p>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-chip">Total: <strong id="totalCount">0</strong></div>
+        <div class="stat-chip">Low stock: <strong id="lowCount">0</strong></div>
+        <div class="stat-chip">Categories: <strong id="catCount">0</strong></div>
+      </div>
+
+      <div class="glass-card" style="margin-bottom:1.5rem;">
+        <div class="add-form">
+          <h2 id="formTitle">Add to Pantry</h2>
+          <form id="addForm" autocomplete="off">
+            <div class="form-row">
+              <div class="form-group" style="grid-column:1/-1">
+                <label for="iName">Item Name *</label>
+                <input type="text" id="iName" placeholder="e.g. Basmati rice, Olive oil…" required>
+              </div>
+            </div>
+            <div class="form-row three">
+              <div class="form-group">
+                <label for="iCategory">Category</label>
+                <select id="iCategory"></select>
+              </div>
+              <div class="form-group">
+                <label for="iQuantity">Quantity</label>
+                <input type="text" id="iQuantity" placeholder="e.g. 3 cans">
+              </div>
+              <div class="form-group">
+                <label for="iStockLevel">Stock Level</label>
+                <select id="iStockLevel">
+                  <option value="Good">Good</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="iCost">Cost Price</label>
+                <input type="number" id="iCost" placeholder="0.00" min="0" step="0.01">
+              </div>
+              <div class="form-group">
+                <label for="iNote">Note (optional)</label>
+                <input type="text" id="iNote" placeholder="Brand preference, storage tip…">
+              </div>
+            </div>
+            <div style="display:flex;gap:0.75rem;margin-top:0.25rem;">
+              <button type="submit" class="btn btn-primary" id="submitBtn">+ Add Item</button>
+              <button type="button" class="btn btn-outline" onclick="cancelEdit()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <div class="filter-bar">
+          <input type="text" id="searchInput" placeholder="Search pantry…">
+          <select id="categoryFilter"></select>
+          <button class="btn btn-ghost btn-sm" id="clearAllBtn" style="margin-left:auto;">Clear All</button>
+        </div>
+        <div class="items-container">
+          <div class="section-title">
+            Items
+            <span class="count-badge" id="itemCountBadge">0</span>
+          </div>
+          <div class="items-grid" id="itemsGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SVG Pantry Widget -->
+    <div class="pantry-widget" id="pantryWidget" title="View pantry contents">
+      <div class="pantry-svg-wrap" id="pantrySvgWrap">
+        <svg width="90" height="130" viewBox="0 0 90 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Cabinet body -->
+          <rect x="6" y="8" width="78" height="116" rx="6" fill="rgba(255,247,237,0.9)" stroke="rgba(249,115,22,0.35)" stroke-width="1.5"/>
+          <!-- Top shelf divider -->
+          <line x1="6" y1="52" x2="84" y2="52" stroke="rgba(249,115,22,0.3)" stroke-width="1.5"/>
+          <!-- Middle shelf divider -->
+          <line x1="6" y1="88" x2="84" y2="88" stroke="rgba(249,115,22,0.3)" stroke-width="1.5"/>
+          <!-- Vertical divider top section -->
+          <line x1="45" y1="8" x2="45" y2="52" stroke="rgba(249,115,22,0.2)" stroke-width="1"/>
+          <!-- Door handles top left -->
+          <rect x="24" y="27" width="12" height="4" rx="2" fill="rgba(234,88,12,0.5)"/>
+          <!-- Door handles top right -->
+          <rect x="54" y="27" width="12" height="4" rx="2" fill="rgba(234,88,12,0.5)"/>
+          <!-- Bottom single door handle -->
+          <rect x="37" y="96" width="16" height="4" rx="2" fill="rgba(234,88,12,0.5)"/>
+          <!-- Jar items on middle shelf -->
+          <rect x="16" y="60" width="12" height="22" rx="3" fill="rgba(253,186,116,0.4)" stroke="rgba(249,115,22,0.25)" stroke-width="1"/>
+          <rect x="14" y="58" width="16" height="4" rx="2" fill="rgba(234,88,12,0.35)"/>
+          <!-- Can item -->
+          <rect x="35" y="63" width="10" height="19" rx="2" fill="rgba(253,186,116,0.3)" stroke="rgba(249,115,22,0.2)" stroke-width="1"/>
+          <rect x="34" y="61" width="12" height="4" rx="2" fill="rgba(234,88,12,0.3)"/>
+          <!-- Box item -->
+          <rect x="52" y="60" width="18" height="22" rx="2" fill="rgba(253,186,116,0.25)" stroke="rgba(249,115,22,0.2)" stroke-width="1"/>
+          <!-- Spice dots on top shelf -->
+          <circle cx="22" cy="36" r="6" fill="rgba(253,186,116,0.35)" stroke="rgba(249,115,22,0.2)" stroke-width="1"/>
+          <circle cx="35" cy="36" r="5" fill="rgba(253,186,116,0.25)" stroke="rgba(249,115,22,0.2)" stroke-width="1"/>
+          <circle cx="58" cy="36" r="7" fill="rgba(253,186,116,0.3)" stroke="rgba(249,115,22,0.2)" stroke-width="1"/>
+          <circle cx="72" cy="36" r="5" fill="rgba(253,186,116,0.2)" stroke="rgba(249,115,22,0.2)" stroke-width="1"/>
+          <!-- Feet -->
+          <rect x="14" y="120" width="10" height="6" rx="2" fill="rgba(249,115,22,0.2)"/>
+          <rect x="66" y="120" width="10" height="6" rx="2" fill="rgba(249,115,22,0.2)"/>
+        </svg>
+        <div class="pantry-badge" id="pantryBadge">0</div>
+      </div>
+      <span class="pantry-widget-label">Tap to view</span>
+    </div>
+  </div>
+</main>
+
+<!-- Pantry Drawer -->
+<div class="pantry-drawer-overlay" id="drawerOverlay"></div>
+<div class="pantry-drawer" id="pantryDrawer">
+  <div class="pantry-drawer-header">
+    <h2>🫙 Pantry Contents</h2>
+    <button class="btn btn-ghost btn-sm" id="closeDrawer" style="font-size:1rem;">✕</button>
+  </div>
+  <div class="pantry-drawer-body" id="drawerBody">
+    <div class="drawer-empty"><div class="empty-icon">🫙</div><p>Pantry is empty.</p></div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/pantry.js"></script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fridge — Kitchen</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .page-layout {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: start;
+    }
+    .page-content { min-width: 0; }
+
+    /* SVG Fridge Widget */
+    .fridge-widget {
+      position: sticky;
+      top: 84px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .fridge-widget-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .fridge-svg-wrap {
+      position: relative;
+      transition: transform 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+    .fridge-svg-wrap:hover { transform: scale(1.05); }
+    .fridge-svg-wrap:active { transform: scale(0.97); }
+
+    .fridge-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 26px;
+      height: 26px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: white;
+      box-shadow: 0 2px 8px rgba(249,115,22,0.45);
+      font-family: 'DM Mono', monospace;
+      border: 2px solid white;
+      transition: transform 0.2s ease;
+    }
+    .fridge-badge.bump { animation: badgeBump 0.3s ease; }
+    @keyframes badgeBump {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+
+    /* Fridge Drawer/Popup */
+    .fridge-drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(26,10,0,0.35);
+      backdrop-filter: blur(4px);
+      z-index: 150;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .fridge-drawer-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .fridge-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(420px, 100vw);
+      background: rgba(255,247,237,0.97);
+      backdrop-filter: blur(20px);
+      border-left: 1px solid var(--glass-border);
+      box-shadow: -12px 0 48px rgba(194,65,12,0.15);
+      z-index: 151;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      overflow: hidden;
+    }
+    .fridge-drawer.open {
+      transform: translateX(0);
+    }
+    .fridge-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.4);
+      flex-shrink: 0;
+    }
+    .fridge-drawer-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--orange-800);
+    }
+    .fridge-drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .drawer-item {
+      background: var(--surface);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 0.9rem 1rem;
+      animation: fadeUp 0.3s ease both;
+    }
+    .drawer-item .item-name { font-size: 0.85rem; font-weight: 500; margin-bottom: 0.4rem; }
+    .drawer-item .item-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .drawer-empty {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+    }
+    .drawer-empty .empty-icon { font-size: 2.5rem; opacity: 0.4; margin-bottom: 0.75rem; }
+
+    @media (max-width: 700px) {
+      .page-layout { grid-template-columns: 1fr; }
+      .fridge-widget { 
+        position: fixed; 
+        bottom: 1.5rem; 
+        right: 1.5rem; 
+        top: auto;
+        z-index: 90;
+        background: rgba(255,247,237,0.9);
+        padding: 0.6rem;
+        border-radius: 50%;
+        box-shadow: 0 4px 20px rgba(194,65,12,0.2);
+        border: 1px solid var(--glass-border);
+      }
+      .fridge-widget-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">
+    <span class="brand-icon">🍊</span> Kitchen
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">🏠 Home</a></li>
+    <li><a href="fridge.html">🧊 Fridge</a></li>
+    <li><a href="pantry.html">🫙 Pantry</a></li>
+    <li><a href="grocery.html">🛒 Grocery</a></li>
+    <li><a href="bucket.html">✨ Bucket</a></li>
+  </ul>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<main>
+  <div class="page-layout">
+    <div class="page-content">
+      <div class="page-header">
+        <h1>🧊 <span>Fridge</span></h1>
+        <p>Track cold &amp; perishable items with expiry dates</p>
+      </div>
+
+      <div class="stats-bar">
+        <div class="stat-chip">Total: <strong id="totalCount">0</strong></div>
+        <div class="stat-chip">Expiring soon: <strong id="expiringCount">0</strong></div>
+        <div class="stat-chip">Categories: <strong id="catCount">0</strong></div>
+      </div>
+
+      <div class="glass-card" style="margin-bottom:1.5rem;">
+        <div class="add-form">
+          <h2 id="formTitle">Add to Fridge</h2>
+          <form id="addForm" autocomplete="off">
+            <div class="form-row">
+              <div class="form-group" style="grid-column:1/-1">
+                <label for="iName">Item Name *</label>
+                <input type="text" id="iName" placeholder="e.g. Whole milk, Cheddar cheese…" required>
+              </div>
+            </div>
+            <div class="form-row three">
+              <div class="form-group">
+                <label for="iCategory">Category</label>
+                <select id="iCategory"></select>
+              </div>
+              <div class="form-group">
+                <label for="iQuantity">Quantity</label>
+                <input type="text" id="iQuantity" placeholder="e.g. 2 bottles">
+              </div>
+              <div class="form-group">
+                <label for="iExpiry">Expiry Date</label>
+                <input type="date" id="iExpiry">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="iCost">Cost Price</label>
+                <input type="number" id="iCost" placeholder="0.00" min="0" step="0.01">
+              </div>
+              <div class="form-group">
+                <label for="iNote">Note (optional)</label>
+                <input type="text" id="iNote" placeholder="Any extra details…">
+              </div>
+            </div>
+            <div style="display:flex;gap:0.75rem;margin-top:0.25rem;">
+              <button type="submit" class="btn btn-primary" id="submitBtn">+ Add Item</button>
+              <button type="button" class="btn btn-outline" onclick="cancelEdit()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="glass-card">
+        <div class="filter-bar">
+          <input type="text" id="searchInput" placeholder="Search items…">
+          <select id="categoryFilter"></select>
+          <button class="btn btn-ghost btn-sm" id="clearAllBtn" style="margin-left:auto;">Clear All</button>
+        </div>
+        <div class="items-container">
+          <div class="section-title">
+            Items
+            <span class="count-badge" id="itemCountBadge">0</span>
+          </div>
+          <div class="items-grid" id="itemsGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SVG Fridge Widget -->
+    <div class="fridge-widget" id="fridgeWidget" title="View fridge contents">
+      <div class="fridge-svg-wrap" id="fridgeSvgWrap">
+        <svg width="90" height="130" viewBox="0 0 90 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Body -->
+          <rect x="8" y="4" width="74" height="122" rx="10" fill="rgba(255,247,237,0.9)" stroke="rgba(249,115,22,0.35)" stroke-width="1.5"/>
+          <!-- Freezer section -->
+          <rect x="8" y="4" width="74" height="42" rx="10" fill="rgba(253,186,116,0.25)" stroke="rgba(249,115,22,0.35)" stroke-width="1.5"/>
+          <!-- Divider line -->
+          <line x1="8" y1="46" x2="82" y2="46" stroke="rgba(249,115,22,0.3)" stroke-width="1.5"/>
+          <!-- Freezer handle -->
+          <rect x="34" y="19" width="22" height="5" rx="2.5" fill="rgba(234,88,12,0.5)"/>
+          <!-- Fridge handle -->
+          <rect x="34" y="78" width="22" height="5" rx="2.5" fill="rgba(234,88,12,0.5)"/>
+          <!-- Freezer shelf lines -->
+          <line x1="16" y1="30" x2="74" y2="30" stroke="rgba(249,115,22,0.15)" stroke-width="1" stroke-dasharray="3 3"/>
+          <!-- Fridge shelf lines -->
+          <line x1="16" y1="65" x2="74" y2="65" stroke="rgba(249,115,22,0.15)" stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="16" y1="88" x2="74" y2="88" stroke="rgba(249,115,22,0.15)" stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="16" y1="108" x2="74" y2="108" stroke="rgba(249,115,22,0.15)" stroke-width="1" stroke-dasharray="3 3"/>
+          <!-- Hinge dots -->
+          <circle cx="15" cy="10" r="2" fill="rgba(249,115,22,0.2)"/>
+          <circle cx="15" cy="120" r="2" fill="rgba(249,115,22,0.2)"/>
+          <!-- Snowflake icon in freezer -->
+          <text x="45" y="15" text-anchor="middle" font-size="10" fill="rgba(249,115,22,0.4)">❄</text>
+          <!-- Bottom foot -->
+          <rect x="18" y="122" width="12" height="4" rx="2" fill="rgba(249,115,22,0.25)"/>
+          <rect x="60" y="122" width="12" height="4" rx="2" fill="rgba(249,115,22,0.25)"/>
+        </svg>
+        <div class="fridge-badge" id="fridgeBadge">0</div>
+      </div>
+      <span class="fridge-widget-label">Tap to view</span>
+    </div>
+  </div>
+</main>
+
+<!-- Fridge Drawer -->
+<div class="fridge-drawer-overlay" id="drawerOverlay"></div>
+<div class="fridge-drawer" id="fridgeDrawer">
+  <div class="fridge-drawer-header">
+    <h2>🧊 Fridge Contents</h2>
+    <button class="btn btn-ghost btn-sm" id="closeDrawer" style="font-size:1rem;">✕</button>
+  </div>
+  <div class="fridge-drawer-body" id="drawerBody">
+    <div class="drawer-empty"><div class="empty-icon">🧊</div><p>Fridge is empty.</p></div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/fridge.js"></script>
+</body>
+</html>
