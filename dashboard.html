@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kitchen — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .hero {
+      min-height: calc(100vh - 64px);
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 3rem 1.5rem 5rem;
+      max-width: 1100px; margin: 0 auto;
+      position: relative; z-index: 1;
+    }
+    .hero-eyebrow {
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1rem;
+      animation: fadeUp 0.4s 0.1s ease both;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 9vw, 7rem);
+      font-weight: 300; line-height: 0.95; color: var(--orange-800);
+      letter-spacing: -0.02em; margin-bottom: 1.5rem;
+      animation: fadeUp 0.5s 0.2s ease both;
+    }
+    .hero-title em { font-style: italic; color: var(--accent); }
+    .hero-sub {
+      font-size: 0.82rem; color: var(--text-muted); max-width: 420px;
+      line-height: 1.7; letter-spacing: 0.03em; margin-bottom: 2.5rem;
+      animation: fadeUp 0.5s 0.3s ease both;
+    }
+    .hero-cta {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      animation: fadeUp 0.5s 0.4s ease both;
+    }
+    .sections-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem; margin-top: 4rem;
+      animation: fadeUp 0.6s 0.5s ease both;
+    }
+    @media (max-width: 600px) { .sections-grid { grid-template-columns: 1fr; } }
+    .section-nav-card {
+      display: block; text-decoration: none; padding: 1.75rem;
+      background: var(--glass-bg); backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 4px 24px var(--glass-shadow);
+      transition: var(--transition); position: relative; overflow: hidden;
+    }
+    .section-nav-card::after {
+      content: '→'; position: absolute; bottom: 1.5rem; right: 1.5rem;
+      font-size: 1.2rem; color: var(--accent);
+      opacity: 0; transform: translateX(-6px); transition: var(--transition);
+    }
+    .section-nav-card:hover {
+      background: var(--surface-hover); transform: translateY(-3px);
+      box-shadow: 0 12px 40px var(--glass-shadow); border-color: rgba(249,115,22,0.3);
+    }
+    .section-nav-card:hover::after { opacity: 1; transform: translateX(0); }
+    .card-icon { font-size: 2rem; margin-bottom: 0.75rem; display: block; }
+    .card-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem; font-weight: 600; color: var(--orange-800); margin-bottom: 0.4rem;
+    }
+    .card-desc { font-size: 0.72rem; color: var(--text-muted); line-height: 1.6; letter-spacing: 0.03em; }
+    .card-count {
+      margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.68rem; color: var(--accent-dark);
+      background: rgba(249,115,22,0.1); padding: 0.25rem 0.7rem;
+      border-radius: 100px; border: 1px solid rgba(249,115,22,0.18);
+    }
+    .welcome-strip {
+      margin-top: 4rem; padding: 1.25rem 1.75rem;
+      background: linear-gradient(135deg, rgba(249,115,22,0.12), rgba(253,186,116,0.08));
+      border: 1px solid rgba(249,115,22,0.2); border-radius: var(--radius-lg);
+      display: flex; align-items: center; gap: 1rem;
+      font-size: 0.75rem; color: var(--text-secondary); line-height: 1.6;
+      animation: fadeUp 0.6s 0.6s ease both;
+    }
+    .welcome-strip span { font-size: 1.5rem; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="dashboard.html" class="nav-brand">
+    <span class="brand-icon">🍊</span> Kitchen
+  </a>
+  <ul class="nav-links">
+    <li><a href="dashboard.html">🏠 Home</a></li>
+    <li><a href="fridge.html">🧊 Fridge</a></li>
+    <li><a href="pantry.html">🫙 Pantry</a></li>
+    <li><a href="grocery.html">🛒 Grocery</a></li>
+    <li><a href="bucket.html">✨ Bucket</a></li>
+  </ul>
+  <button class="nav-hamburger" id="navHamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="hero">
+  <p class="hero-eyebrow">Welcome back, <span id="userGreeting">Chef</span></p>
+  <h1 class="hero-title">Every<br>ingredient,<br><em>organised.</em></h1>
+  <p class="hero-sub">
+    Track what's in your fridge and pantry, plan your grocery runs,
+    and keep a dream list of things you'd love to cook someday.
+  </p>
+  <div class="hero-cta">
+    <a href="fridge.html" class="btn btn-primary">Open Fridge →</a>
+    <a href="grocery.html" class="btn btn-outline">Grocery List</a>
+  </div>
+
+  <div class="sections-grid">
+    <a href="fridge.html" class="section-nav-card">
+      <span class="card-icon">🧊</span>
+      <div class="card-label">Fridge</div>
+      <div class="card-desc">Cold &amp; perishable items with expiry tracking and quantity management.</div>
+      <div class="card-count" id="fridgeCount">— items</div>
+    </a>
+    <a href="pantry.html" class="section-nav-card">
+      <span class="card-icon">🫙</span>
+      <div class="card-label">Pantry</div>
+      <div class="card-desc">Dry goods, canned items, spices, and all your shelf-stable staples.</div>
+      <div class="card-count" id="pantryCount">— items</div>
+    </a>
+    <a href="grocery.html" class="section-nav-card">
+      <span class="card-icon">🛒</span>
+      <div class="card-label">Grocery List</div>
+      <div class="card-desc">Plan your next shop, check things off as you go, then move to fridge or pantry.</div>
+      <div class="card-count" id="groceryCount">— items</div>
+    </a>
+    <a href="bucket.html" class="section-nav-card">
+      <span class="card-icon">✨</span>
+      <div class="card-label">Bucket List</div>
+      <div class="card-desc">Dream ingredients, dishes, and cuisines you want to explore someday.</div>
+      <div class="card-count" id="bucketCount">— items</div>
+    </a>
+  </div>
+
+  <div class="welcome-strip">
+    <span>💡</span>
+    <span>Tip: Move items between sections easily — add to grocery and move straight to the fridge once you've shopped.</span>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const session = getSession();
+    if (session) {
+      const firstName = (session.name || '').split(' ')[0] || 'Chef';
+      document.getElementById('userGreeting').textContent = firstName;
+    }
+
+    const sections = ['fridge','pantry','grocery','bucket'];
+    sections.forEach(sec => {
+      const list = Storage.get(sec);
+      const el = document.getElementById(sec + 'Count');
+      if (el) el.textContent = `${list.length} ${list.length === 1 ? 'item' : 'items'}`;
+    });
+  });
+</script>
+</body>
+</html>

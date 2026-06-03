@@ -21,7 +21,7 @@ function requireAuth() {
 
 function signOut() {
   localStorage.removeItem(SESSION_KEY);
-  window.location.href = 'landing.html';
+  window.location.href = 'index.html';
 }
 
 // ── Per-user storage keys ─────────────────────────────────────
@@ -198,7 +198,7 @@ function categoryOptions(list, selected = '') {
 // ── Init on every app page ────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   // Pages that don't need auth
-  const publicPages = ['landing.html', 'auth.html'];
+  const publicPages = ['index.html', 'auth.html'];
   const current = location.pathname.split('/').pop() || 'index.html';
   if (!publicPages.includes(current)) {
     _session = requireAuth();

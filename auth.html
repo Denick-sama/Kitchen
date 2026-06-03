@@ -345,7 +345,7 @@
 
   <!-- Left decorative panel -->
   <div class="auth-deco">
-    <a href="landing.html" class="deco-logo">🍊 Kitchen</a>
+    <a href="index.html" class="deco-logo">🍊 Kitchen</a>
     <div>
       <div class="deco-title">Your kitchen,<br><em>organised.</em></div>
       <p class="deco-tagline" style="margin-top:1rem;">
@@ -449,7 +449,7 @@
     </form>
 
     <div class="back-link">
-      <a href="landing.html">← Back to home</a>
+      <a href="index.html">← Back to home</a>
     </div>
   </div>
 </div>
@@ -643,7 +643,7 @@ async function doSignup() {
   setSession(email, name);
 
   showAlert(`Welcome, ${name}! Redirecting to your kitchen…`, 'success');
-  setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+  setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
 }
 
 async function doLogin() {
@@ -671,7 +671,7 @@ async function doLogin() {
 
   setSession(email, user.name);
   showAlert(`Welcome back, ${user.name}! Redirecting…`, 'success');
-  setTimeout(() => { window.location.href = 'index.html'; }, 800);
+  setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
 }
 
 // ── Init: read URL param and check existing session ───────────
@@ -681,7 +681,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (session) {
     try {
       const s = JSON.parse(session);
-      if (s.email) { window.location.href = 'index.html'; return; }
+      if (s.email) { window.location.href = 'dashboard.html'; return; }
     } catch {}
   }
 

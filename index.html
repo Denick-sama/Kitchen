@@ -3,165 +3,565 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kitchen — Dashboard</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Kitchen — Your Smart Kitchen Companion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --orange-50:  #fff7ed;
+      --orange-100: #ffedd5;
+      --orange-200: #fed7aa;
+      --orange-300: #fdba74;
+      --orange-400: #fb923c;
+      --orange-500: #f97316;
+      --orange-600: #ea580c;
+      --orange-700: #c2410c;
+      --orange-800: #9a3412;
+      --orange-900: #1a0a00;
+      --accent:      #f97316;
+      --accent-dark: #ea580c;
+      --text-primary:   #1a0a00;
+      --text-secondary: #7c3a10;
+      --text-muted:     #b45309;
+      --glass-bg:     rgba(255,247,237,0.5);
+      --glass-border: rgba(249,115,22,0.18);
+      --glass-shadow: rgba(194,65,12,0.12);
+      --blur: blur(18px);
+      --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 22px;
+      --radius-xl: 32px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Mono', monospace;
+      background: var(--orange-50);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Ambient background ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 15% 10%, rgba(253,186,116,0.45) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 80% at 88% 85%, rgba(249,115,22,0.2) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 50% at 55% 45%, rgba(254,215,170,0.3) 0%, transparent 65%);
+      pointer-events: none; z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='0.8' fill='rgba(249,115,22,0.07)'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem;
+      background: rgba(255,247,237,0.7);
+      backdrop-filter: var(--blur);
+      border-bottom: 1px solid var(--glass-border);
+      box-shadow: 0 2px 20px var(--glass-shadow);
+    }
+
+    .nav-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.7rem; font-weight: 600;
+      color: var(--orange-800);
+      text-decoration: none;
+      display: flex; align-items: center; gap: 0.5rem;
+      letter-spacing: 0.04em;
+    }
+
+    .nav-actions { display: flex; gap: 0.75rem; align-items: center; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+      padding: 0.6rem 1.4rem;
+      border-radius: var(--radius-sm);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; border: none;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--accent); color: white;
+      box-shadow: 0 3px 14px rgba(249,115,22,0.35);
+    }
+    .btn-primary:hover {
+      background: var(--accent-dark); transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(249,115,22,0.45);
+    }
+    .btn-outline {
+      background: transparent; color: var(--accent-dark);
+      border: 1px solid rgba(249,115,22,0.35);
+    }
+    .btn-outline:hover {
+      background: rgba(249,115,22,0.08); border-color: var(--accent);
+    }
+    .btn-lg {
+      padding: 0.85rem 2rem; font-size: 0.78rem;
+    }
+
+    /* ── Hero ── */
     .hero {
-      min-height: calc(100vh - 64px);
-      display: flex; flex-direction: column; justify-content: center;
-      padding: 3rem 1.5rem 5rem;
-      max-width: 1100px; margin: 0 auto;
       position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 7rem 2.5rem 5rem;
+      max-width: 1200px; margin: 0 auto;
     }
+
     .hero-eyebrow {
-      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 1rem;
-      animation: fadeUp 0.4s 0.1s ease both;
+      font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1.2rem;
+      animation: fadeUp 0.5s 0.1s ease both;
+      display: flex; align-items: center; gap: 0.75rem;
     }
+    .hero-eyebrow::before {
+      content: '';
+      display: block; width: 32px; height: 1px;
+      background: var(--accent);
+    }
+
     .hero-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(3rem, 9vw, 7rem);
-      font-weight: 300; line-height: 0.95; color: var(--orange-800);
-      letter-spacing: -0.02em; margin-bottom: 1.5rem;
-      animation: fadeUp 0.5s 0.2s ease both;
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      font-weight: 300;
+      line-height: 0.92;
+      color: var(--orange-900);
+      letter-spacing: -0.03em;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.6s 0.2s ease both;
     }
-    .hero-title em { font-style: italic; color: var(--accent); }
-    .hero-sub {
-      font-size: 0.82rem; color: var(--text-muted); max-width: 420px;
-      line-height: 1.7; letter-spacing: 0.03em; margin-bottom: 2.5rem;
-      animation: fadeUp 0.5s 0.3s ease both;
+    .hero-title em {
+      font-style: italic;
+      color: var(--accent);
     }
+    .hero-title .line-indent {
+      padding-left: clamp(2rem, 8vw, 7rem);
+      display: block;
+    }
+
+    .hero-desc {
+      font-size: 0.82rem; color: var(--text-muted);
+      max-width: 460px; line-height: 1.8;
+      letter-spacing: 0.03em; margin-bottom: 2.5rem;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+
     .hero-cta {
       display: flex; gap: 1rem; flex-wrap: wrap;
-      animation: fadeUp 0.5s 0.4s ease both;
+      animation: fadeUp 0.6s 0.4s ease both;
+      margin-bottom: 5rem;
     }
-    .sections-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr);
-      gap: 1.25rem; margin-top: 4rem;
+
+    /* ── Feature strip ── */
+    .features-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
       animation: fadeUp 0.6s 0.5s ease both;
     }
-    @media (max-width: 600px) { .sections-grid { grid-template-columns: 1fr; } }
-    .section-nav-card {
-      display: block; text-decoration: none; padding: 1.75rem;
-      background: var(--glass-bg); backdrop-filter: var(--blur);
-      -webkit-backdrop-filter: var(--blur);
+
+    .feature-card {
+      background: var(--glass-bg);
+      backdrop-filter: var(--blur);
       border: 1px solid var(--glass-border);
       border-radius: var(--radius-lg);
-      box-shadow: 0 4px 24px var(--glass-shadow);
-      transition: var(--transition); position: relative; overflow: hidden;
+      padding: 1.5rem 1.25rem;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
     }
-    .section-nav-card::after {
-      content: '→'; position: absolute; bottom: 1.5rem; right: 1.5rem;
-      font-size: 1.2rem; color: var(--accent);
-      opacity: 0; transform: translateX(-6px); transition: var(--transition);
+    .feature-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity: 0; transition: var(--transition);
     }
-    .section-nav-card:hover {
-      background: var(--surface-hover); transform: translateY(-3px);
-      box-shadow: 0 12px 40px var(--glass-shadow); border-color: rgba(249,115,22,0.3);
+    .feature-card:hover {
+      transform: translateY(-3px);
+      background: rgba(255,255,255,0.75);
+      box-shadow: 0 10px 40px var(--glass-shadow);
+      border-color: rgba(249,115,22,0.3);
     }
-    .section-nav-card:hover::after { opacity: 1; transform: translateX(0); }
-    .card-icon { font-size: 2rem; margin-bottom: 0.75rem; display: block; }
-    .card-label {
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+      font-size: 1.8rem; margin-bottom: 0.9rem; display: block;
+    }
+    .feature-name {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.5rem; font-weight: 600; color: var(--orange-800); margin-bottom: 0.4rem;
+      font-size: 1.1rem; font-weight: 600;
+      color: var(--orange-800); margin-bottom: 0.4rem;
     }
-    .card-desc { font-size: 0.72rem; color: var(--text-muted); line-height: 1.6; letter-spacing: 0.03em; }
-    .card-count {
-      margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.4rem;
-      font-size: 0.68rem; color: var(--accent-dark);
-      background: rgba(249,115,22,0.1); padding: 0.25rem 0.7rem;
-      border-radius: 100px; border: 1px solid rgba(249,115,22,0.18);
+    .feature-desc {
+      font-size: 0.68rem; color: var(--text-muted);
+      line-height: 1.7; letter-spacing: 0.03em;
     }
-    .welcome-strip {
-      margin-top: 4rem; padding: 1.25rem 1.75rem;
-      background: linear-gradient(135deg, rgba(249,115,22,0.12), rgba(253,186,116,0.08));
-      border: 1px solid rgba(249,115,22,0.2); border-radius: var(--radius-lg);
-      display: flex; align-items: center; gap: 1rem;
-      font-size: 0.75rem; color: var(--text-secondary); line-height: 1.6;
-      animation: fadeUp 0.6s 0.6s ease both;
+
+    /* ── Section ── */
+    .section {
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto;
+      padding: 5rem 2.5rem;
     }
-    .welcome-strip span { font-size: 1.5rem; }
+
+    .section-label {
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .section-label::before {
+      content: ''; display: block; width: 24px; height: 1px; background: var(--accent);
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 300; color: var(--orange-900);
+      letter-spacing: -0.02em; line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+    .section-title em { font-style: italic; color: var(--accent); }
+
+    /* ── How it works ── */
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem; margin-top: 3rem;
+    }
+    .step {
+      display: flex; gap: 1.25rem; align-items: flex-start;
+    }
+    .step-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.5rem; font-weight: 300;
+      color: rgba(249,115,22,0.2); line-height: 1;
+      flex-shrink: 0; margin-top: -0.4rem;
+    }
+    .step-body {}
+    .step-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; font-weight: 600;
+      color: var(--orange-800); margin-bottom: 0.4rem;
+    }
+    .step-desc {
+      font-size: 0.72rem; color: var(--text-muted);
+      line-height: 1.7; letter-spacing: 0.03em;
+    }
+
+    /* ── CTA Banner ── */
+    .cta-banner {
+      position: relative; z-index: 1;
+      margin: 0 2.5rem 5rem;
+      max-width: 1200px; margin-left: auto; margin-right: auto;
+      background: linear-gradient(135deg, rgba(249,115,22,0.15) 0%, rgba(253,186,116,0.1) 100%);
+      border: 1px solid rgba(249,115,22,0.25);
+      border-radius: var(--radius-xl);
+      padding: 3.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 2rem; flex-wrap: wrap;
+      overflow: hidden;
+    }
+    .cta-banner::before {
+      content: '🍊';
+      position: absolute; right: 3rem; top: 50%;
+      transform: translateY(-50%);
+      font-size: 8rem; opacity: 0.08; pointer-events: none;
+    }
+    .cta-text h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.6rem, 3vw, 2.5rem);
+      font-weight: 300; color: var(--orange-900);
+      margin-bottom: 0.5rem;
+    }
+    .cta-text h2 em { font-style: italic; color: var(--accent); }
+    .cta-text p {
+      font-size: 0.75rem; color: var(--text-muted);
+      letter-spacing: 0.03em;
+    }
+
+    /* ── Footer ── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--glass-border);
+      padding: 2rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+      font-size: 0.65rem; color: var(--text-muted);
+      letter-spacing: 0.06em;
+    }
+    .footer-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; color: var(--orange-700);
+    }
+
+    /* ── Decorative floating items ── */
+    .float-items {
+      position: absolute; right: 0; top: 50%;
+      transform: translateY(-50%);
+      width: 420px; height: 420px;
+      pointer-events: none;
+      animation: fadeUp 0.8s 0.6s ease both;
+    }
+
+    .float-card {
+      position: absolute;
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: var(--blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      box-shadow: 0 8px 32px var(--glass-shadow);
+      font-size: 0.72rem;
+    }
+    .float-card-1 {
+      top: 5%; left: 10%; width: 180px;
+      animation: float1 6s ease-in-out infinite;
+    }
+    .float-card-2 {
+      top: 38%; right: 5%; width: 160px;
+      animation: float2 7s ease-in-out infinite;
+    }
+    .float-card-3 {
+      bottom: 10%; left: 20%; width: 170px;
+      animation: float3 5.5s ease-in-out infinite;
+    }
+    .float-card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.85rem; font-weight: 600;
+      color: var(--orange-800); margin-bottom: 0.5rem;
+    }
+    .float-tag {
+      display: inline-flex; align-items: center;
+      padding: 0.15rem 0.5rem;
+      background: rgba(249,115,22,0.1);
+      border: 1px solid rgba(249,115,22,0.2);
+      border-radius: 100px;
+      font-size: 0.6rem; color: var(--accent-dark);
+      letter-spacing: 0.04em;
+    }
+    .float-tag.green {
+      background: rgba(22,163,74,0.08);
+      border-color: rgba(22,163,74,0.18);
+      color: #15803d;
+    }
+    .float-tag.red {
+      background: rgba(220,38,38,0.08);
+      border-color: rgba(220,38,38,0.2);
+      color: #dc2626;
+    }
+    .float-items-inner {
+      font-size: 0.7rem; color: var(--text-secondary);
+      display: flex; flex-direction: column; gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+    .float-item-row {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    @keyframes float1 {
+      0%, 100% { transform: translateY(0px) rotate(-1deg); }
+      50%       { transform: translateY(-12px) rotate(1deg); }
+    }
+    @keyframes float2 {
+      0%, 100% { transform: translateY(0px) rotate(1deg); }
+      50%       { transform: translateY(-16px) rotate(-1deg); }
+    }
+    @keyframes float3 {
+      0%, 100% { transform: translateY(0px) rotate(0.5deg); }
+      50%       { transform: translateY(-10px) rotate(-0.5deg); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* divider */
+    .divider {
+      position: relative; z-index: 1;
+      height: 1px; background: var(--glass-border);
+      max-width: 1200px; margin: 0 auto;
+    }
+
+    @media (max-width: 900px) {
+      .features-row { grid-template-columns: repeat(2, 1fr); }
+      .steps-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .float-items { display: none; }
+      .hero { padding-top: 6rem; }
+    }
+    @media (max-width: 600px) {
+      .features-row { grid-template-columns: 1fr 1fr; }
+      nav { padding: 0 1.2rem; }
+      .hero { padding: 5rem 1.2rem 3rem; }
+      .section { padding: 3rem 1.2rem; }
+      .cta-banner { padding: 2rem 1.5rem; margin: 0 1.2rem 3rem; }
+    }
   </style>
 </head>
 <body>
 
 <nav>
-  <a href="index.html" class="nav-brand">
-    <span class="brand-icon">🍊</span> Kitchen
-  </a>
-  <ul class="nav-links">
-    <li><a href="index.html">🏠 Home</a></li>
-    <li><a href="fridge.html">🧊 Fridge</a></li>
-    <li><a href="pantry.html">🫙 Pantry</a></li>
-    <li><a href="grocery.html">🛒 Grocery</a></li>
-    <li><a href="bucket.html">✨ Bucket</a></li>
-  </ul>
-  <button class="nav-hamburger" id="navHamburger" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
+  <a href="index.html" class="nav-brand">🍊 Kitchen</a>
+  <div class="nav-actions">
+    <a href="auth.html?mode=login" class="btn btn-outline">Sign In</a>
+    <a href="auth.html?mode=signup" class="btn btn-primary">Get Started</a>
+  </div>
 </nav>
 
-<div class="hero">
-  <p class="hero-eyebrow">Welcome back, <span id="userGreeting">Chef</span></p>
-  <h1 class="hero-title">Every<br>ingredient,<br><em>organised.</em></h1>
-  <p class="hero-sub">
-    Track what's in your fridge and pantry, plan your grocery runs,
-    and keep a dream list of things you'd love to cook someday.
+<section class="hero">
+  <p class="hero-eyebrow">Smart kitchen management</p>
+  <h1 class="hero-title">
+    Every ingredient,<br>
+    <span class="line-indent"><em>perfectly</em> tracked.</span>
+  </h1>
+  <p class="hero-desc">
+    Kitchen keeps your fridge, pantry, and grocery list in one beautiful place.
+    Never let food expire, never forget what you need, never lose track of your costs.
   </p>
   <div class="hero-cta">
-    <a href="fridge.html" class="btn btn-primary">Open Fridge →</a>
-    <a href="grocery.html" class="btn btn-outline">Grocery List</a>
+    <a href="auth.html?mode=signup" class="btn btn-primary btn-lg">Create free account →</a>
+    <a href="auth.html?mode=login" class="btn btn-outline btn-lg">Sign in</a>
   </div>
 
-  <div class="sections-grid">
-    <a href="fridge.html" class="section-nav-card">
-      <span class="card-icon">🧊</span>
-      <div class="card-label">Fridge</div>
-      <div class="card-desc">Cold &amp; perishable items with expiry tracking and quantity management.</div>
-      <div class="card-count" id="fridgeCount">— items</div>
+  <div class="features-row">
+    <a href="auth.html?mode=signup" class="feature-card" style="text-decoration:none;">
+      <span class="feature-icon">🧊</span>
+      <div class="feature-name">Fridge</div>
+      <div class="feature-desc">Track cold items with expiry dates. Get warned before anything goes off.</div>
     </a>
-    <a href="pantry.html" class="section-nav-card">
-      <span class="card-icon">🫙</span>
-      <div class="card-label">Pantry</div>
-      <div class="card-desc">Dry goods, canned items, spices, and all your shelf-stable staples.</div>
-      <div class="card-count" id="pantryCount">— items</div>
+    <a href="auth.html?mode=signup" class="feature-card" style="text-decoration:none;">
+      <span class="feature-icon">🫙</span>
+      <div class="feature-name">Pantry</div>
+      <div class="feature-desc">Manage dry goods and shelf-stable staples with stock level tracking.</div>
     </a>
-    <a href="grocery.html" class="section-nav-card">
-      <span class="card-icon">🛒</span>
-      <div class="card-label">Grocery List</div>
-      <div class="card-desc">Plan your next shop, check things off as you go, then move to fridge or pantry.</div>
-      <div class="card-count" id="groceryCount">— items</div>
+    <a href="auth.html?mode=signup" class="feature-card" style="text-decoration:none;">
+      <span class="feature-icon">🛒</span>
+      <div class="feature-name">Grocery</div>
+      <div class="feature-desc">Plan your shop, check off as you go, and track your spend.</div>
     </a>
-    <a href="bucket.html" class="section-nav-card">
-      <span class="card-icon">✨</span>
-      <div class="card-label">Bucket List</div>
-      <div class="card-desc">Dream ingredients, dishes, and cuisines you want to explore someday.</div>
-      <div class="card-count" id="bucketCount">— items</div>
+    <a href="auth.html?mode=signup" class="feature-card" style="text-decoration:none;">
+      <span class="feature-icon">✨</span>
+      <div class="feature-name">Bucket List</div>
+      <div class="feature-desc">Keep a dream list of ingredients, dishes, and cuisines to explore.</div>
     </a>
   </div>
 
-  <div class="welcome-strip">
-    <span>💡</span>
-    <span>Tip: Move items between sections easily — add to grocery and move straight to the fridge once you've shopped.</span>
+  <!-- Floating preview cards -->
+  <div class="float-items">
+    <div class="float-card float-card-1">
+      <div class="float-card-title">🧊 Fridge</div>
+      <div class="float-items-inner">
+        <div class="float-item-row">
+          <span>Whole Milk</span>
+          <span class="float-tag red">1d left</span>
+        </div>
+        <div class="float-item-row">
+          <span>Cheddar</span>
+          <span class="float-tag">5d left</span>
+        </div>
+        <div class="float-item-row">
+          <span>Greek Yogurt</span>
+          <span class="float-tag green">12d left</span>
+        </div>
+      </div>
+    </div>
+    <div class="float-card float-card-2">
+      <div class="float-card-title">🛒 Shopping</div>
+      <div class="float-items-inner">
+        <div class="float-item-row">
+          <span>Tomatoes</span>
+          <span class="float-tag">₵8.50</span>
+        </div>
+        <div class="float-item-row">
+          <span>Olive Oil</span>
+          <span class="float-tag">₵24.00</span>
+        </div>
+        <div class="float-item-row">
+          <span>Basmati Rice</span>
+          <span class="float-tag">₵15.00</span>
+        </div>
+      </div>
+    </div>
+    <div class="float-card float-card-3">
+      <div class="float-card-title">✨ Bucket List</div>
+      <div class="float-items-inner">
+        <div class="float-item-row">
+          <span>🦞 Lobster bisque</span>
+          <span class="float-tag">Dish</span>
+        </div>
+        <div class="float-item-row">
+          <span>🍜 Homemade ramen</span>
+          <span class="float-tag">Recipe</span>
+        </div>
+      </div>
+    </div>
   </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <p class="section-label">How it works</p>
+  <h2 class="section-title">Simple by design,<br><em>powerful in practice.</em></h2>
+
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-body">
+        <div class="step-title">Create your account</div>
+        <div class="step-desc">Sign up in seconds. Your data is stored securely and stays completely private to you — each account has its own isolated space.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-body">
+        <div class="step-title">Add your items</div>
+        <div class="step-desc">Fill your fridge, pantry, and grocery list. Add quantities, expiry dates, cost prices, and notes to keep everything organised.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-body">
+        <div class="step-title">Move items seamlessly</div>
+        <div class="step-desc">Bought groceries? Move them straight to the fridge or pantry. Running low? Send an item back to your grocery list in one tap.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<div class="cta-banner" style="position:relative;z-index:1;margin:4rem auto;padding:3.5rem;max-width:1200px;margin-left:2.5rem;margin-right:2.5rem;">
+  <div class="cta-text">
+    <h2>Ready to take control of<br><em>your kitchen?</em></h2>
+    <p>Free forever. No credit card required.</p>
+  </div>
+  <a href="auth.html?mode=signup" class="btn btn-primary btn-lg" style="white-space:nowrap;">
+    Start for free →
+  </a>
 </div>
 
-<script src="js/app.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const session = getSession();
-    if (session) {
-      const firstName = (session.name || '').split(' ')[0] || 'Chef';
-      document.getElementById('userGreeting').textContent = firstName;
-    }
+<footer>
+  <span class="footer-brand">🍊 Kitchen</span>
+  <span>Your data, your device. All data stored locally.</span>
+  <span>© 2025 Kitchen App</span>
+</footer>
 
-    const sections = ['fridge','pantry','grocery','bucket'];
-    sections.forEach(sec => {
-      const list = Storage.get(sec);
-      const el = document.getElementById(sec + 'Count');
-      if (el) el.textContent = `${list.length} ${list.length === 1 ? 'item' : 'items'}`;
-    });
-  });
-</script>
 </body>
 </html>
